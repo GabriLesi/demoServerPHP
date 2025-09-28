@@ -1,0 +1,13 @@
+<?php
+
+spl_autoload_register(function ($sClass) {
+    
+    $sBaseDir = __DIR__ . DIRECTORY_SEPARATOR;
+    
+    // sostituiamo i backslash nel namespace con DIRECTORY_SEPARATOR
+    $hFile = $sBaseDir . str_replace('\\', DIRECTORY_SEPARATOR, $sClass) . '.php';
+    
+    if (file_exists($hFile)) {
+        require_once $hFile;
+    }
+});

@@ -1,0 +1,12 @@
+{
+  "name": "demo/serverphp",
+  "description": "Mini backend PHP con Composer autoload",
+  "require": {},
+  "autoload": {
+    "psr-4": {
+      "Controllers\\": "backend/src/Controllers/",
+      "Models\\": "backend/src/Models/",
+      "Utils\\": "backend/src/Utils/"
+    }
+  }
+}

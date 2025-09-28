@@ -1,26 +1,32 @@
 [
   {
-    "username": "user",
-    "bookID": "2"
+    "id":1,
+    "userID": 2,
+    "bookID": 2
   },
   {
-    "username": "user",
-    "password": "3"
+    "id":2,
+    "userID": 2,
+    "bookID": 3
   },
   {
-    "username": "user",
-    "password": "13"
+    "id":3,
+    "userID": 2,
+    "bookID": 13
   },
   {
-    "username": "user",
-    "password": "14"
+    "id":4,
+    "userID": 2,
+    "bookID": 14
   },
   {
-    "username": "mariorossi",
-    "password": "9"
+    "id":5,
+    "userID": 3,
+    "bookID": 9
   },
   {
-    "username": "mariorossi",
-    "password": "2"
+    "id":6,
+    "userID": 3,
+    "bookID": 2
   }
 ]
