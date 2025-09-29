@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <title>Elenco libri</title>
+  <style>
+    body { font-family: Arial, sans-serif; margin: 20px; }
+    h1 { margin-bottom: 10px; }
+    ul { list-style: none; padding-left: 0; }
+    li { margin: 6px 0; }
+    a { text-decoration: none; color: #007BFF; }
+    a:hover { text-decoration: underline; }
+  </style>
+</head>
+<body>
+  <h1>📚 Elenco Libri</h1>
+  <ul id="books-list"></ul>
+  <p><a href="my-books.html">📖 I miei libri</a> | <a href="login.html" onclick="logout()">🚪 Logout</a></p>
+
+  <script src="js/api.js"></script>
+  <script>
+    async function checkAuth() {
+      const res = await fetch("http://localhost:8000/me", { credentials: "same-origin" });
+      if (!res.ok) {
+        window.location.href = "login.html";
+        return null;
+      }
+      return await res.json();
+    }
+
+    async function renderBooks() {
+      const user = await checkAuth();
+      if (!user) return;
+
+      try {
+        const books = await getBooks();
+        const list = document.getElementById("books-list");
+        list.innerHTML = "";
+        books.forEach(book => {
+          const li = document.createElement("li");
+          li.innerHTML = `<a href="book.html?id=${book.id}">${book.title}</a>`;
+          list.appendChild(li);
+        });
+      } catch (err) {
+        document.body.innerHTML += `<p style="color:red;">${err.message}</p>`;
+      }
+    }
+
+    function logout() {
+      fetch("http://localhost:8000/logout").then(() => {
+        window.location.href = "login.html";
+      });
+    }
+
+    renderBooks();
+  </script>
+</body>
+</html>

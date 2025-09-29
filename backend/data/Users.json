@@ -1,17 +1,24 @@
 [
   {
-    "id": 1,
-    "username": "admin",
-    "password": "admin"
-  },
-  {
     "id": 2,
     "username": "user",
-    "password": "1234"
+    "password": "1234",
+    "name": "Luca",
+    "surname": "Bianchi",
+    "email": "luca.bianchi@example.com",
+    "address": "Corso Italia 25",
+    "city": "Milano",
+    "phone": "+39 0211122233"
   },
   {
     "id": 3,
     "username": "mariorossi",
-    "password": "mario"
+    "password": "mario",
+    "name": "Mario",
+    "surname": "Rossi",
+    "email": "mario.rossi@example.com",
+    "address": "Via Garibaldi 10",
+    "city": "Torino",
+    "phone": "+39 0114455667"
   }
 ]

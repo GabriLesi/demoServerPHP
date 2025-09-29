@@ -15,6 +15,12 @@ class UserBook {
     }
 
     public function getById(int $id): ?array {
-        return $this->hDB->findByParam("id", $id);
+        $aUserBook = $this->hDB->findByParam("id", $id);
+        return $aUserBook[0] ?: [];
+    }
+
+    public function getByUserID(int $id): ?array {
+        $aUserBooksByUser = $this->hDB->findByParam("userID", $id);
+        return $aUserBooksByUser ?: [];
     }
 }

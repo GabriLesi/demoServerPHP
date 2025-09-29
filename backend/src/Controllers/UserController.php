@@ -8,6 +8,7 @@ class UserController {
 
     public function __construct() {
         $this->hUserModel = new User();
+        
     }
 
     public function index() {
@@ -18,7 +19,7 @@ class UserController {
     public function detail($nUserID) {
         header('Content-Type: application/json');
         $aUser = $this->hUserModel->getById((int)$nUserID);
-        if ($aUser) {
+        if (!empty($aUser)) {
             echo json_encode($aUser);
         } else {
             http_response_code(404);

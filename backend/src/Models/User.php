@@ -15,6 +15,7 @@ class User {
     }
 
     public function getById(int $id): ?array {
-        return $this->hDB->findByParam("id", $id);
+        $aUser = $this->hDB->findByParam("id", $id);
+        return $aUser[0] ?: [];
     }
 }

@@ -18,7 +18,7 @@ class BookController {
     public function detail($nBookID) {
         header('Content-Type: application/json');
         $aBook = $this->hBookModel->getById((int)$nBookID);
-        if ($aBook) {
+        if (!empty($aBook)) {
             echo json_encode($aBook);
         } else {
             http_response_code(404);

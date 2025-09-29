@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <title>Dettaglio Utente</title>
+  <style>
+    body { font-family: Arial, sans-serif; margin: 20px; }
+    .card { border: 1px solid #ccc; border-radius: 8px; padding: 16px; max-width: 400px; box-shadow: 2px 2px 6px rgba(0,0,0,0.1); }
+    .card h2 { margin-top: 0; }
+    .info p { margin: 6px 0; }
+    a { text-decoration: none; color: #007BFF; }
+    a:hover { text-decoration: underline; }
+  </style>
+</head>
+<body>
+  <h1>👤 Dettaglio Utente</h1>
+  <div id="user-detail" class="card"></div>
+  <p>
+    <a id="user-books-link" href="#">📚 Vedi libri di questo utente</a> |
+    <a href="books.html">📖 Libri</a> |
+    <a href="my-books.html">📖 I miei libri</a> |
+    <a href="login.html" onclick="logout()">🚪 Logout</a>
+  </p>
+
+  <script src="js/api.js"></script>
+  <script>
+    function getQueryParam(name) {
+      return new URLSearchParams(window.location.search).get(name);
+    }
+
+    async function checkAuth() {
+      const res = await fetch("http://localhost:8000/me", { credentials: "same-origin" });
+      if (!res.ok) {
+        window.location.href = "login.html";
+        return null;
+      }
+      return await res.json();
+    }
+
+    async function renderUser() {
+      const userAuth = await checkAuth();
+      if (!userAuth) return;
+
+      try {
+        const id = getQueryParam("id");
+        if (!id) throw new Error("ID utente mancante");
+
+        const user = await getUser(id);
+        document.getElementById("user-detail").innerHTML = `
+          <h2>${user.name} ${user.surname}</h2>
+          <div class="info">
+            <p><strong>Username:</strong> ${user.username}</p>
+            <p><strong>Email:</strong> ${user.email}</p>
+            <p><strong>Indirizzo:</strong> ${user.address}, ${user.city}</p>
+            <p><strong>Telefono:</strong> ${user.phone}</p>
+          </div>
+        `;
+        document.getElementById("user-books-link")
+          .setAttribute("href", `user-books.html?id=${user.id}`);
+      } catch (err) {
+        document.getElementById("user-detail").innerHTML =
+          `<p style="color:red;">${err.message}</p>`;
+      }
+    }
+
+    function logout() {
+      fetch("http://localhost:8000/logout").then(() => {
+        window.location.href = "login.html";
+      });
+    }
+
+    renderUser();
+  </script>
+</body>
+</html>

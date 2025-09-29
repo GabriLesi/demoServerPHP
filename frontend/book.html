@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <title>Dettaglio Libro</title>
+  <style>
+    body { font-family: Arial, sans-serif; margin: 20px; }
+    a { text-decoration: none; color: #007BFF; }
+    a:hover { text-decoration: underline; }
+  </style>
+</head>
+<body>
+  <h1>📖 Dettaglio Libro</h1>
+  <div id="book-detail"></div>
+  <p>
+    <a href="books.html">⬅ Torna all'elenco</a> |
+    <a href="my-books.html">📖 I miei libri</a> |
+    <a href="login.html" onclick="logout()">🚪 Logout</a>
+  </p>
+
+  <script src="js/api.js"></script>
+  <script>
+    function getQueryParam(name) {
+      return new URLSearchParams(window.location.search).get(name);
+    }
+
+    async function checkAuth() {
+      const res = await fetch("http://localhost:8000/me", { credentials: "same-origin" });
+      if (!res.ok) {
+        window.location.href = "login.html";
+        return null;
+      }
+      return await res.json();
+    }
+
+    async function renderBook() {
+      const user = await checkAuth();
+      if (!user) return;
+
+      try {
+        const id = getQueryParam("id");
+        if (!id) throw new Error("ID libro mancante");
+
+        const book = await getBook(id);
+        document.getElementById("book-detail").innerHTML = `
+          <h2>${book.title}</h2>
+          <p><strong>ID:</strong> ${book.id}</p>
+        `;
+      } catch (err) {
+        document.getElementById("book-detail").innerHTML =
+          `<p style="color:red;">${err.message}</p>`;
+      }
+    }
+
+    function logout() {
+      fetch("http://localhost:8000/logout").then(() => {
+        window.location.href = "login.html";
+      });
+    }
+
+    renderBook();
+  </script>
+</body>
+</html>

@@ -30,9 +30,10 @@ class JsonDBHelper {
      */
     public function findByParam(string $sParamName, mixed $mParamValue): ?array {
         $aAllItems = $this->all();
+        $aReturnList = [];
         foreach ($aAllItems as $aItem) {
-            if ($aItem[$sParamName] === $mParamValue) return $aItem;
+            if ($aItem[$sParamName] === $mParamValue) $aReturnList[] = $aItem;
         }
-        return null;
+        return $aReturnList;
     }
 }

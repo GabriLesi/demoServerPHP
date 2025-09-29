@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <title>I miei libri</title>
+  <style>
+    body { font-family: Arial, sans-serif; margin: 20px; }
+    h1 { margin-bottom: 10px; }
+    ul { list-style: none; padding-left: 0; }
+    li { margin: 6px 0; }
+    a { text-decoration: none; color: #007BFF; }
+    a:hover { text-decoration: underline; }
+  </style>
+</head>
+<body>
+  <h1>📚 I miei libri</h1>
+  <div id="user-info"></div>
+  <ul id="user-books"></ul>
+  <p><a href="login.html" onclick="logout()">🚪 Logout</a></p>
+
+  <script src="js/api.js"></script>
+  <script>
+    // 🔒 controlla autenticazione lato server
+    async function checkAuth() {
+      const res = await fetch("http://localhost:8000/me", { credentials: "same-origin" });
+      if (!res.ok) {
+        window.location.href = "login.html";
+        return null;
+      }
+      return await res.json();
+    }
+
+    async function renderMyBooks() {
+      try {
+        const user = await checkAuth();
+        if (!user) return; // non loggato → redirect
+
+        document.getElementById("user-info").innerHTML =
+          `<h2>Benvenuto, ${user.name} ${user.surname}</h2>`;
+
+        const userBooks = await getUserBooks(user.id);
+        const list = document.getElementById("user-books");
+        list.innerHTML = "";
+
+        if (userBooks.length === 0) {
+          list.innerHTML = "<li>Nessun libro associato</li>";
+          return;
+        }
+
+        for (let relation of userBooks) {
+          const book = relation.book;
+          const li = document.createElement("li");
+          li.innerHTML = `<a href="book.html?id=${book.id}">${book.title}</a>`;
+          list.appendChild(li);
+        }
+      } catch (err) {
+        document.getElementById("user-info").innerHTML =
+          `<p style="color:red;">${err.message}</p>`;
+      }
+    }
+
+    function logout() {
+      fetch("http://localhost:8000/logout").then(() => {
+        window.location.href = "login.html";
+      });
+    }
+
+    renderMyBooks();
+  </script>
+</body>
+</html>
