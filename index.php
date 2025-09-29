@@ -18,7 +18,7 @@ $aPublicEndpoints = [
     'js/api.js'
 ];
 
-// 🔒 pagine frontend che richiedono login
+//  pagine frontend che richiedono login
 $aProtectedPages = [
     'frontend/user.html',
     'frontend/books.html',
@@ -64,23 +64,23 @@ $aParts = explode('/', $sUri);
 switch ($aParts[0]) {
     case 'login':
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-            $data = json_decode(file_get_contents('php://input'), true);
-            $aUsername = $data['username'] ?? '';
-            $aPassword = $data['password'] ?? '';
+            $aData = json_decode(file_get_contents('php://input'), true);
+            $aUsername = $aData['username'] ?? '';
+            $aPassword = $aData['password'] ?? '';
 
             $aUsers = json_decode(file_get_contents(__DIR__ . '/backend/data/users.json'), true);
 
             $aUser = null;
-            foreach ($aUsers as $u) {
-                if ($u['username'] === $aUsername && $u['password'] === $aPassword) {
-                    $aUser = $u;
+            foreach ($aUsers as $aUser) {
+                if ($aUser['username'] === $aUsername && $aUser['password'] === $aPassword) {
+                    $aUser = $aUser;
                     break;
                 }
             }
 
             if ($aUser) {
                 unset($aUser['password']);
-                $_SESSION['user'] = $aUser; // 🔒 login avvenuto
+                $_SESSION['user'] = $aUser; //  login avvenuto
                 echo json_encode($aUser);
             } else {
                 http_response_code(401);
@@ -105,8 +105,36 @@ switch ($aParts[0]) {
 
 
     case 'users':
+        if (!isset($_SESSION['user'])) {
+            http_response_code(401);
+            echo json_encode(['error' => 'Non autorizzato']);
+            exit;
+        }
+
+        if (isset($aParts[1]) && $aParts[1] === 'me' && $_SERVER['REQUEST_METHOD'] === 'PUT') {
+            $data = json_decode(file_get_contents('php://input'), true);
+            $userId = $_SESSION['user']['id'];
+
+            $usersFile = __DIR__ . '/backend/data/users.json';
+            $users = json_decode(file_get_contents($usersFile), true);
+
+            foreach ($users as &$u) {
+                if ($u['id'] == $userId) {
+                    // Aggiorna solo i campi sensati (no id, no username obbligatorio)
+                    foreach (['first_name', 'last_name', 'email', 'address', 'city', 'phone', 'password'] as $field) {
+                        if (isset($data[$field])) $u[$field] = $data[$field];
+                    }
+                    $_SESSION['user'] = $u; // aggiorna sessione
+                    file_put_contents($usersFile, json_encode($users, JSON_PRETTY_PRINT));
+                    echo json_encode(['message' => 'Profilo aggiornato', 'user' => $u]);
+                    exit;
+                }
+            }
+            http_response_code(404);
+            echo json_encode(['error' => 'Utente non trovato']);
+        }
+        break;
     case 'books':
-    case 'userbooks':
         // Protezione API
         if (!isset($_SESSION['user'])) {
             http_response_code(401);
@@ -114,30 +142,73 @@ switch ($aParts[0]) {
             exit;
         }
 
-        if ($aParts[0] === 'users') {
-            $hController = new UserController();
-            if (isset($aParts[1])) {
-                $hController->detail($aParts[1]);
-            }
-        } elseif ($aParts[0] === 'books') {
-            $hController = new BookController();
-            if (isset($aParts[1])) {
-                $hController->detail($aParts[1]);
-            } else {
-                $hController->index();
-            }
+        $hController = new BookController();
+        if (isset($aParts[1])) {
+            $hController->detail($aParts[1]);
         } else {
-            $hController = new UserBookController();
-            if (isset($aParts[2]) && $aParts[2] === "books") {
-                $hController->listUserBooks($aParts[1]);
-            } elseif (isset($aParts[1])) {
-                $hController->detail($aParts[1]);
-            } else {
-                $hController->index();
-            }
+            $hController->index();
         }
         
         break;
+
+    case 'userbooks':
+        if (!isset($_SESSION['user'])) {
+            http_response_code(401);
+            echo json_encode(['error' => 'Non autorizzato']);
+            exit;
+        }
+
+        $sUserId = $_SESSION['user']['id'];
+        $sFilePath = __DIR__ . '/backend/data/UserBooks.json';
+        $aUserBooks = json_decode(file_get_contents($sFilePath), true);
+
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            // Aggiungi associazione
+            $aData = json_decode(file_get_contents('php://input'), true);
+            $sBookId = $aData['book_id'] ?? null;
+            if (!$sBookId) {
+                http_response_code(400);
+                echo json_encode(['error' => 'book_id mancante']);
+                exit;
+            }
+
+            // Controlla se esiste già
+            $bExists = false;
+            foreach ($aUserBooks as $aUserBook) {
+                if ($aUserBook['user_id'] == $sUserId && $aUserBook['book_id'] == $sBookId) {
+                    $bExists = true;
+                    break;
+                }
+            }
+
+            if (!$bExists) {
+                $aUserBooks[] = ['user_id' => $sUserId, 'book_id' => $sBookId];
+                file_put_contents($sFilePath, json_encode($aUserBooks, JSON_PRETTY_PRINT));
+            }
+
+            echo json_encode(['message' => 'Associazione aggiunta']);
+        } elseif ($_SERVER['REQUEST_METHOD'] === 'DELETE') {
+            // Rimuovi associazione
+            $aData = json_decode(file_get_contents('php://input'), true);
+            $sBookId = $aData['book_id'] ?? null;
+            if (!$sBookId) {
+                http_response_code(400);
+                echo json_encode(['error' => 'book_id mancante']);
+                exit;
+            }
+
+            $aUserBooks = array_filter($aUserBooks, function($aUserBook) use ($sUserId, $sBookId) {
+                return !($aUserBook['user_id'] == $sUserId && $aUserBook['book_id'] == $sBookId);
+            });
+
+            file_put_contents($sFilePath, json_encode(array_values($aUserBooks), JSON_PRETTY_PRINT));
+            echo json_encode(['message' => 'Associazione rimossa']);
+        } else {
+            $hController = new UserBookController();
+            $hController->listUserBooks($_SESSION["user"]["id"]);
+        }
+        break;
+
 
     case '':
         // redirect alla login se non loggato

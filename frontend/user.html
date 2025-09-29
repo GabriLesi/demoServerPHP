@@ -42,10 +42,7 @@
       if (!userAuth) return;
 
       try {
-        const id = getQueryParam("id");
-        if (!id) throw new Error("ID utente mancante");
-
-        const user = await getUser(id);
+        const user = await getUser();
         document.getElementById("user-detail").innerHTML = `
           <h2>${user.name} ${user.surname}</h2>
           <div class="info">

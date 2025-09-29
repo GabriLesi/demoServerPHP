@@ -38,7 +38,7 @@
         document.getElementById("user-info").innerHTML =
           `<h2>Benvenuto, ${user.name} ${user.surname}</h2>`;
 
-        const userBooks = await getUserBooks(user.id);
+        const userBooks = await getUserBooks();
         const list = document.getElementById("user-books");
         list.innerHTML = "";
 
@@ -49,6 +49,7 @@
 
         for (let relation of userBooks) {
           const book = relation.book;
+          console.log(book);
           const li = document.createElement("li");
           li.innerHTML = `<a href="book.html?id=${book.id}">${book.title}</a>`;
           list.appendChild(li);

@@ -14,16 +14,16 @@ async function getBook(bookID) {
   return await res.json();
 }
 
-// Ottieni dettagli utente
-async function getUser(id) {
-  const res = await fetch(`${API_BASE}/users/${id}`);
+// Ottieni dettagli del proprio utente
+async function getUser() {
+  const res = await fetch(`${API_BASE}/user`);
   if (!res.ok) throw new Error("Utente non trovato");
   return await res.json();
 }
 
-// Ottieni libri associati all'utente
-async function getUserBooks(userId) {
-  const res = await fetch(`${API_BASE}/userbooks/${userId}/books`);
+// Ottieni libri associati al proprio utente
+async function getUserBooks() {
+  const res = await fetch(`${API_BASE}/userbooks`);
   if (!res.ok) throw new Error("Errore caricamento libri utente");
   return await res.json();
 }
