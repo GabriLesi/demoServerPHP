@@ -3,7 +3,7 @@ namespace Models;
 
 use Utils\JsonDBHelper;
 
-class User {
+class Book {
     private JsonDBHelper $hDB;
 
     public function __construct() {
