@@ -5,22 +5,40 @@
   <title>I miei libri</title>
   <style>
     body { font-family: Arial, sans-serif; margin: 20px; }
-    h1 { margin-bottom: 10px; }
+    h1, h2 { margin-bottom: 10px; }
     ul { list-style: none; padding-left: 0; }
     li { margin: 6px 0; }
+    button {
+      margin-left: 10px; padding: 4px 8px; border-radius: 4px;
+      border: 1px solid #007BFF; background: white; color: #007BFF; cursor: pointer;
+    }
+    button:hover { background: #007BFF; color: white; }
     a { text-decoration: none; color: #007BFF; }
     a:hover { text-decoration: underline; }
+    .section { margin-bottom: 30px; }
   </style>
 </head>
 <body>
   <h1>📚 I miei libri</h1>
   <div id="user-info"></div>
-  <ul id="user-books"></ul>
-  <p><a href="login.html" onclick="logout()">🚪 Logout</a></p>
+
+  <div class="section">
+    <h2>Libri già associati</h2>
+    <ul id="owned-books"></ul>
+  </div>
+
+  <div class="section">
+    <h2>Libri disponibili da associare</h2>
+    <ul id="available-books"></ul>
+  </div>
+
+  <p>
+    <a href="books.html">📖 Tutti i libri</a> | 
+    <a href="login.html" onclick="logout()">🚪 Logout</a>
+  </p>
 
   <script src="js/api.js"></script>
   <script>
-    // 🔒 controlla autenticazione lato server
     async function checkAuth() {
       const res = await fetch("http://localhost:8000/me", { credentials: "same-origin" });
       if (!res.ok) {
@@ -30,34 +48,65 @@
       return await res.json();
     }
 
+    async function addBook(bookId) {
+      const res = await fetch('http://localhost:8000/userbooks', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ book_id: bookId }),
+        credentials: 'same-origin'
+      });
+      const data = await res.json();
+      alert(data.message);
+      renderMyBooks();
+    }
+
+    async function removeBook(bookId) {
+      const res = await fetch('http://localhost:8000/userbooks', {
+        method: 'DELETE',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ book_id: bookId }),
+        credentials: 'same-origin'
+      });
+      const data = await res.json();
+      alert(data.message);
+      renderMyBooks();
+    }
+
     async function renderMyBooks() {
-      try {
-        const user = await checkAuth();
-        if (!user) return; // non loggato → redirect
+      const user = await checkAuth();
+      if (!user) return;
 
-        document.getElementById("user-info").innerHTML =
-          `<h2>Benvenuto, ${user.name} ${user.surname}</h2>`;
+      document.getElementById("user-info").innerHTML =
+        `<h2>Benvenuto, ${user.name} ${user.surname}</h2>`;
 
-        const userBooks = await getUserBooks();
-        const list = document.getElementById("user-books");
-        list.innerHTML = "";
+      const allBooks = await getBooks();
+      const userBooks = await getUserBooks();
 
-        if (userBooks.length === 0) {
-          list.innerHTML = "<li>Nessun libro associato</li>";
-          return;
-        }
+      const ownedBooksList = document.getElementById("owned-books");
+      const availableBooksList = document.getElementById("available-books");
 
-        for (let relation of userBooks) {
-          const book = relation.book;
-          console.log(book);
+      ownedBooksList.innerHTML = "";
+      availableBooksList.innerHTML = "";
+
+      const ownedIds = userBooks.map(ub => ub.bookID);
+
+      // Libri già associati
+      allBooks.forEach(book => {
+        if (ownedIds.includes(book.id)) {
           const li = document.createElement("li");
-          li.innerHTML = `<a href="book.html?id=${book.id}">${book.title}</a>`;
-          list.appendChild(li);
+          li.innerHTML = `<strong>${book.title}</strong> <button onclick="removeBook(${book.id})">Rimuovi</button>`;
+          ownedBooksList.appendChild(li);
         }
-      } catch (err) {
-        document.getElementById("user-info").innerHTML =
-          `<p style="color:red;">${err.message}</p>`;
-      }
+      });
+
+      // Libri disponibili da associare
+      allBooks.forEach(book => {
+        if (!ownedIds.includes(book.id)) {
+          const li = document.createElement("li");
+          li.innerHTML = `<strong>${book.title}</strong> <button onclick="addBook(${book.id})">Aggiungi</button>`;
+          availableBooksList.appendChild(li);
+        }
+      });
     }
 
     function logout() {

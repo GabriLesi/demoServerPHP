@@ -32,7 +32,9 @@ class JsonDBHelper {
         $aAllItems = $this->all();
         $aReturnList = [];
         foreach ($aAllItems as $aItem) {
-            if ($aItem[$sParamName] === $mParamValue) $aReturnList[] = $aItem;
+            if (array_key_exists($sParamName, $aItem) && $aItem[$sParamName] === $mParamValue) {
+                $aReturnList[] = $aItem;
+            }
         }
         return $aReturnList;
     }
