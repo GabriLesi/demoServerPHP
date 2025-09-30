@@ -14,16 +14,16 @@ $sUri = trim($sUri, '/');
 // Endpoint pubblici
 $aPublicEndpoints = [
     'login', 
-    'frontend/login.html', 
+    'login.html', 
     'js/api.js'
 ];
 
 //  pagine frontend che richiedono login
 $aProtectedPages = [
-    'frontend/user.html',
-    'frontend/books.html',
-    'frontend/book.html',
-    'frontend/my-books.html'
+    'user.html',
+    'books.html',
+    'book.html',
+    'my-books.html'
 ];
 
 // Percorso assoluto al file richiesto
@@ -35,7 +35,7 @@ if ($sUri && file_exists($sFilepath) && !is_dir($sFilepath)) {
     // Se è una pagina protetta e l’utente non è loggato, redirect al login
     if ((!in_array($sUri, $aPublicEndpoints) || in_array($sUri, $aProtectedPages)) 
         && !isset($_SESSION['user'])) {
-        header("Location: /frontend/login.html");
+        header("Location: login.html");
         exit;
     }
 
@@ -165,24 +165,24 @@ switch ($aParts[0]) {
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             // Aggiungi associazione
             $aData = json_decode(file_get_contents('php://input'), true);
-            $sBookId = $aData['book_id'] ?? null;
+            $sBookId = $aData['bookID'] ?? null;
             if (!$sBookId) {
                 http_response_code(400);
-                echo json_encode(['error' => 'book_id mancante']);
+                echo json_encode(['error' => 'bookID mancante']);
                 exit;
             }
 
             // Controlla se esiste già
             $bExists = false;
             foreach ($aUserBooks as $aUserBook) {
-                if ($aUserBook['user_id'] == $sUserId && $aUserBook['book_id'] == $sBookId) {
+                if ($aUserBook['userID'] == $sUserId && $aUserBook['bookID'] == $sBookId) {
                     $bExists = true;
                     break;
                 }
             }
 
             if (!$bExists) {
-                $aUserBooks[] = ['user_id' => $sUserId, 'book_id' => $sBookId];
+                $aUserBooks[] = ['userID' => $sUserId, 'bookID' => $sBookId];
                 file_put_contents($sFilePath, json_encode($aUserBooks, JSON_PRETTY_PRINT));
             }
 
@@ -190,15 +190,16 @@ switch ($aParts[0]) {
         } elseif ($_SERVER['REQUEST_METHOD'] === 'DELETE') {
             // Rimuovi associazione
             $aData = json_decode(file_get_contents('php://input'), true);
-            $sBookId = $aData['book_id'] ?? null;
+            $sBookId = $aData['bookID'] ?? null;
             if (!$sBookId) {
                 http_response_code(400);
-                echo json_encode(['error' => 'book_id mancante']);
+                echo json_encode(['error' => 'bookID mancante']);
                 exit;
             }
 
             $aUserBooks = array_filter($aUserBooks, function($aUserBook) use ($sUserId, $sBookId) {
-                return !($aUserBook['user_id'] == $sUserId && $aUserBook['book_id'] == $sBookId);
+                if (array_key_exists('userID', $aUserBook) && array_key_exists('bookID', $aUserBook))
+                return !($aUserBook['userID'] == $sUserId && $aUserBook['bookID'] == $sBookId);
             });
 
             file_put_contents($sFilePath, json_encode(array_values($aUserBooks), JSON_PRETTY_PRINT));
@@ -213,9 +214,9 @@ switch ($aParts[0]) {
     case '':
         // redirect alla login se non loggato
         if (!isset($_SESSION['user'])) {
-            header("Location: /frontend/login.html");
+            header("Location: login.html");
         } else {
-            header("Location: /frontend/my-books.html");
+            header("Location: my-books.html");
         }
         break;
 

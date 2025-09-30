@@ -24,7 +24,11 @@
         "bookID": 2
     },
     {
-        "user_id": 3,
-        "book_id": 1
+        "userID": 3,
+        "bookID": 1
+    },
+    {
+        "userID": 3,
+        "bookID": 3
     }
 ]

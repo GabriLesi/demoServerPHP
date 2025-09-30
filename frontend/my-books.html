@@ -52,11 +52,15 @@
       const res = await fetch('http://localhost:8000/userbooks', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ book_id: bookId }),
+        body: JSON.stringify({ bookID: bookId }),
         credentials: 'same-origin'
       });
       const data = await res.json();
-      alert(data.message);
+      if (data.message){
+        alert(data.message);
+      } else if (data.error){
+        alert(data.error);
+      }
       renderMyBooks();
     }
 
@@ -64,11 +68,15 @@
       const res = await fetch('http://localhost:8000/userbooks', {
         method: 'DELETE',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ book_id: bookId }),
+        body: JSON.stringify({ bookID: bookId }),
         credentials: 'same-origin'
       });
       const data = await res.json();
-      alert(data.message);
+      if (data.message){
+        alert(data.message);
+      } else if(data.error){
+        alert(data.error);
+      }
       renderMyBooks();
     }
 
