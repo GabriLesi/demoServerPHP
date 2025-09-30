@@ -14,11 +14,15 @@
 </head>
 <body>
   <h1>📚 Elenco Libri</h1>
+  <div id="book-filter-container"></div>
   <ul id="books-list"></ul>
+
   <p><a href="my-books.html">📖 I miei libri</a> | <a href="login.html" onclick="logout()">🚪 Logout</a></p>
 
   <script src="js/api.js"></script>
-  <script>
+  <script type="module">
+    import { initBookFilter } from './js/book-filter.js';
+
     async function checkAuth() {
       const res = await fetch("http://localhost:8000/me", { credentials: "same-origin" });
       if (!res.ok) {
@@ -28,22 +32,32 @@
       return await res.json();
     }
 
+    function renderBookListUX(list) {
+      const ul = document.getElementById('books-list');
+      ul.innerHTML = '';
+      list.forEach(book => {
+        const li = document.createElement('li');
+        li.textContent = `${book.title} di ${book.author} [${book.genre}]`;
+        ul.appendChild(li);
+      });
+    }
+
     async function renderBooks() {
       const user = await checkAuth();
       if (!user) return;
 
       try {
         const books = await getBooks();
-        const list = document.getElementById("books-list");
-        list.innerHTML = "";
-        books.forEach(book => {
-          const li = document.createElement("li");
-          li.innerHTML = `<a href="book.html?id=${book.id}">${book.title}</a>`;
-          list.appendChild(li);
-        });
+        renderBookListUX(books);
       } catch (err) {
         document.body.innerHTML += `<p style="color:red;">${err.message}</p>`;
       }
+
+      const container = document.getElementById('book-filter-container');
+      const resp = await fetch('utils/book-filter.html');
+      container.innerHTML = await resp.text();
+
+      initBookFilter(allBooks, renderBookListUX);
     }
 
     function logout() {

@@ -22,6 +22,8 @@
   <h1>📚 I miei libri</h1>
   <div id="user-info"></div>
 
+  <div id="book-filter-container"></div>
+  
   <div class="section">
     <h2>Libri già associati</h2>
     <ul id="owned-books"></ul>
@@ -38,7 +40,9 @@
   </p>
 
   <script src="js/api.js"></script>
-  <script>
+  <script type="module">
+    import { initBookFilter } from './js/book-filter.js';
+
     async function checkAuth() {
       const res = await fetch("http://localhost:8000/me", { credentials: "same-origin" });
       if (!res.ok) {
@@ -88,33 +92,46 @@
         `<h2>Benvenuto, ${user.name} ${user.surname}</h2>`;
 
       const allBooks = await getBooks();
-      const userBooks = await getUserBooks();
 
-      const ownedBooksList = document.getElementById("owned-books");
-      const availableBooksList = document.getElementById("available-books");
+      async function renderMyBooks(allBooks) {
+        const userBooks = await getUserBooks();
+        const ownedIds = userBooks.map(ub => ub.bookID);
+        const ownedBooksList = document.getElementById("owned-books");
+        ownedBooksList.innerHTML = "";
+        allBooks.forEach(book => {
+          if (ownedIds.includes(book.id)) {
+            const li = document.createElement("li");
+            li.innerHTML = `<strong>${book.title}</strong> <button onclick="removeBook(${book.id})">Rimuovi</button>`;
+            ownedBooksList.appendChild(li);
+          }
+        });
+      }
 
-      ownedBooksList.innerHTML = "";
-      availableBooksList.innerHTML = "";
+      async function renderAllBooks(allBooks) {
+        const userBooks = await getUserBooks();
+        const ownedIds = userBooks.map(ub => ub.bookID);
+        const availableBooksList = document.getElementById("available-books");
+        availableBooksList.innerHTML = "";
+        allBooks.forEach(book => {
+          if (!ownedIds.includes(book.id)) {
+            const li = document.createElement("li");
+            li.innerHTML = `<strong>${book.title}</strong> <button onclick="addBook(${book.id})">Aggiungi</button>`;
+            availableBooksList.appendChild(li);
+          }
+        });
+      }
 
-      const ownedIds = userBooks.map(ub => ub.bookID);
+      function renderBookListUX(allBooks) {
+        renderAllBooks(allBooks);
+        renderMyBooks(allBooks);
+      }
 
-      // Libri già associati
-      allBooks.forEach(book => {
-        if (ownedIds.includes(book.id)) {
-          const li = document.createElement("li");
-          li.innerHTML = `<strong>${book.title}</strong> <button onclick="removeBook(${book.id})">Rimuovi</button>`;
-          ownedBooksList.appendChild(li);
-        }
-      });
+      // Carica HTML del filtro e inizializzalo per l'elenco dei libri disponibili
+      const container = document.getElementById('book-filter-container');
+      const resp = await fetch('utils/book-filter.html');
+      container.innerHTML = await resp.text();
 
-      // Libri disponibili da associare
-      allBooks.forEach(book => {
-        if (!ownedIds.includes(book.id)) {
-          const li = document.createElement("li");
-          li.innerHTML = `<strong>${book.title}</strong> <button onclick="addBook(${book.id})">Aggiungi</button>`;
-          availableBooksList.appendChild(li);
-        }
-      });
+      initBookFilter(allBooks, renderBookListUX);
     }
 
     function logout() {

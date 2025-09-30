@@ -4,139 +4,159 @@
     "title": "Il nome della rosa",
     "author": "Umberto Eco",
     "year": 1980,
-    "description": "Romanzo storico ambientato in un monastero medievale."
+    "description": "Romanzo storico ambientato in un monastero medievale.",
+    "genre": "Storico"
   },
   {
     "id": 2,
     "title": "1984",
     "author": "George Orwell",
     "year": 1949,
-    "description": "Distopia su totalitarismo e sorveglianza."
+    "description": "Distopia su totalitarismo e sorveglianza.",
+    "genre": "Distopico"
   },
   {
     "id": 3,
     "title": "Il Gattopardo",
     "author": "Giuseppe Tomasi di Lampedusa",
     "year": 1958,
-    "description": "Romanzo storico sulla decadenza dell'aristocrazia siciliana."
+    "description": "Romanzo storico sulla decadenza dell'aristocrazia siciliana.",
+    "genre": "Storico"
   },
   {
     "id": 4,
     "title": "Il piccolo principe",
     "author": "Antoine de Saint-Exupéry",
     "year": 1943,
-    "description": "Favola filosofica sul senso della vita e dell'amicizia."
+    "description": "Favola filosofica sul senso della vita e dell'amicizia.",
+    "genre": "Favola"
   },
   {
     "id": 5,
     "title": "Orgoglio e pregiudizio",
     "author": "Jane Austen",
     "year": 1813,
-    "description": "Romanzo sulla società inglese e le relazioni amorose."
+    "description": "Romanzo sulla società inglese e le relazioni amorose.",
+    "genre": "Romantico"
   },
   {
     "id": 6,
     "title": "Cent'anni di solitudine",
     "author": "Gabriel García Márquez",
     "year": 1967,
-    "description": "Saga familiare con elementi di realismo magico."
+    "description": "Saga familiare con elementi di realismo magico.",
+    "genre": "Realismo magico"
   },
   {
     "id": 7,
     "title": "Il Signore degli Anelli",
     "author": "J.R.R. Tolkien",
     "year": 1954,
-    "description": "Epica saga fantasy nella Terra di Mezzo."
+    "description": "Epica saga fantasy nella Terra di Mezzo.",
+    "genre": "Fantasy"
   },
   {
     "id": 8,
     "title": "La coscienza di Zeno",
     "author": "Italo Svevo",
     "year": 1923,
-    "description": "Romanzo psicologico sulla vita e i pensieri di Zeno Cosini."
+    "description": "Romanzo psicologico sulla vita e i pensieri di Zeno Cosini.",
+    "genre": "Psicologico"
   },
   {
     "id": 9,
     "title": "Fahrenheit 451",
     "author": "Ray Bradbury",
     "year": 1953,
-    "description": "Distopia sul controllo della conoscenza attraverso la censura."
+    "description": "Distopia sul controllo della conoscenza attraverso la censura.",
+    "genre": "Distopico"
   },
   {
     "id": 10,
     "title": "La Divina Commedia",
     "author": "Dante Alighieri",
     "year": 1320,
-    "description": "Poema epico sulla vita dopo la morte e il viaggio dell'anima."
+    "description": "Poema epico sulla vita dopo la morte e il viaggio dell'anima.",
+    "genre": "Poema epico"
   },
   {
     "id": 11,
     "title": "Moby Dick",
     "author": "Herman Melville",
     "year": 1851,
-    "description": "Avventura marinaresca e ossessione per la balena bianca."
+    "description": "Avventura marinaresca e ossessione per la balena bianca.",
+    "genre": "Avventura"
   },
   {
     "id": 12,
     "title": "Anna Karenina",
     "author": "Lev Tolstoj",
     "year": 1877,
-    "description": "Tragedia romantica ambientata nella società russa dell'Ottocento."
+    "description": "Tragedia romantica ambientata nella società russa dell'Ottocento.",
+    "genre": "Romantico"
   },
   {
     "id": 13,
     "title": "Il giovane Holden",
     "author": "J.D. Salinger",
     "year": 1951,
-    "description": "Romanzo sulla ribellione e l'alienazione adolescenziale."
+    "description": "Romanzo sulla ribellione e l'alienazione adolescenziale.",
+    "genre": "Formazione"
   },
   {
     "id": 14,
     "title": "Dracula",
     "author": "Bram Stoker",
     "year": 1897,
-    "description": "Romanzo gotico sul vampiro conte Dracula."
+    "description": "Romanzo gotico sul vampiro conte Dracula.",
+    "genre": "Gotico"
   },
   {
     "id": 15,
     "title": "Frankenstein",
     "author": "Mary Shelley",
     "year": 1818,
-    "description": "Storia del dottor Frankenstein e della sua creatura."
+    "description": "Storia del dottor Frankenstein e della sua creatura.",
+    "genre": "Gotico"
   },
   {
     "id": 16,
     "title": "Il processo",
     "author": "Franz Kafka",
     "year": 1925,
-    "description": "Romanzo sull'assurdità e l'alienazione burocratica."
+    "description": "Romanzo sull'assurdità e l'alienazione burocratica.",
+    "genre": "Esistenzialista"
   },
   {
     "id": 17,
     "title": "Lolita",
     "author": "Vladimir Nabokov",
     "year": 1955,
-    "description": "Romanzo controverso sull'ossessione e l'amore proibito."
+    "description": "Romanzo controverso sull'ossessione e l'amore proibito.",
+    "genre": "Psicologico"
   },
   {
     "id": 18,
     "title": "La metamorfosi",
     "author": "Franz Kafka",
     "year": 1915,
-    "description": "Racconto sulla trasformazione di Gregor Samsa in insetto."
+    "description": "Racconto sulla trasformazione di Gregor Samsa in insetto.",
+    "genre": "Esistenzialista"
   },
   {
     "id": 19,
     "title": "I promessi sposi",
     "author": "Alessandro Manzoni",
     "year": 1827,
-    "description": "Romanzo storico sulla Lombardia del Seicento."
+    "description": "Romanzo storico sulla Lombardia del Seicento.",
+    "genre": "Storico"
   },
   {
     "id": 20,
     "title": "Cuore",
     "author": "Edmondo De Amicis",
     "year": 1886,
-    "description": "Romanzo pedagogico sui valori morali e l'educazione dei giovani."
+    "description": "Romanzo pedagogico sui valori morali e l'educazione dei giovani.",
+    "genre": "Pedagogico"
   }
 ]
