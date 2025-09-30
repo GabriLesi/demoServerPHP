@@ -65,7 +65,7 @@
       } else if (data.error){
         alert(data.error);
       }
-      renderMyBooks();
+      renderUserBooks();
     }
 
     async function removeBook(bookId) {
@@ -81,10 +81,10 @@
       } else if(data.error){
         alert(data.error);
       }
-      renderMyBooks();
+      renderUserBooks();
     }
 
-    async function renderMyBooks() {
+    async function renderUserBooks() {
       const user = await checkAuth();
       if (!user) return;
 
@@ -107,7 +107,7 @@
         });
       }
 
-      async function renderAllBooks(allBooks) {
+      async function renderNotMyBooks(allBooks) {
         const userBooks = await getUserBooks();
         const ownedIds = userBooks.map(ub => ub.bookID);
         const availableBooksList = document.getElementById("available-books");
@@ -122,7 +122,7 @@
       }
 
       function renderBookListUX(allBooks) {
-        renderAllBooks(allBooks);
+        renderNotMyBooks(allBooks);
         renderMyBooks(allBooks);
       }
 
@@ -140,7 +140,7 @@
       });
     }
 
-    renderMyBooks();
+    renderUserBooks();
   </script>
 </body>
 </html>

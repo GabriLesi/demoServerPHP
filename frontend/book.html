@@ -44,7 +44,13 @@
         const book = await getBook(id);
         document.getElementById("book-detail").innerHTML = `
           <h2>${book.title}</h2>
-          <p><strong>ID:</strong> ${book.id}</p>
+          <div class="info">
+            <p><strong>ID:</strong> ${book.id}</p>
+            <p><strong>Autore:</strong> ${book.author}</p>
+            <p><strong>Genere:</strong> ${book.genre}</p>
+            <p><strong>Anno di pubblicazione:</strong> ${book.year}</p>
+            <p><strong>Descrizione:</strong> ${book.description}</p>
+          </div>
         `;
       } catch (err) {
         document.getElementById("book-detail").innerHTML =

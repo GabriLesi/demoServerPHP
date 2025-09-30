@@ -37,7 +37,7 @@
       ul.innerHTML = '';
       list.forEach(book => {
         const li = document.createElement('li');
-        li.textContent = `${book.title} di ${book.author} [${book.genre}]`;
+        li.innerHTML = `<a href="book.html?id=${book.id}">${book.title} di ${book.author} [${book.genre}]</a>`;
         ul.appendChild(li);
       });
     }
@@ -46,8 +46,10 @@
       const user = await checkAuth();
       if (!user) return;
 
+      let books = [];
+
       try {
-        const books = await getBooks();
+        books = await getBooks();
         renderBookListUX(books);
       } catch (err) {
         document.body.innerHTML += `<p style="color:red;">${err.message}</p>`;
@@ -57,7 +59,7 @@
       const resp = await fetch('utils/book-filter.html');
       container.innerHTML = await resp.text();
 
-      initBookFilter(allBooks, renderBookListUX);
+      initBookFilter(books, renderBookListUX);
     }
 
     function logout() {
