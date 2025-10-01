@@ -2,68 +2,137 @@
 <html lang="it">
 <head>
   <meta charset="UTF-8">
-  <title>Dettaglio Utente</title>
+  <title>Profilo Utente</title>
   <style>
     body { font-family: Arial, sans-serif; margin: 20px; }
-    .card { border: 1px solid #ccc; border-radius: 8px; padding: 16px; max-width: 400px; box-shadow: 2px 2px 6px rgba(0,0,0,0.1); }
+    .card { border: 1px solid #ccc; border-radius: 8px; padding: 16px; max-width: 600px; }
     .card h2 { margin-top: 0; }
     .info p { margin: 6px 0; }
-    a { text-decoration: none; color: #007BFF; }
-    a:hover { text-decoration: underline; }
+    label { display: block; margin-top: 10px; }
+    input { padding: 5px; width: 100%; }
+    #actions { margin-top: 16px; }
+    button { margin-right: 8px; padding: 6px 12px; }
   </style>
 </head>
 <body>
   <h1>👤 Dettaglio Utente</h1>
-  <div id="user-detail" class="card"></div>
-  <p>
-    <a href="books.html">📖 Libri</a> |
+
+  <div id="user-detail" class="card">
+    <h2>Il tuo profilo</h2>
+    <form id="user-form">
+      <label>Username
+        <input type="text" id="username" disabled>
+      </label>
+      <label>Nome
+        <input type="text" id="name" disabled>
+      </label>
+      <label>Cognome
+        <input type="text" id="surname" disabled>
+      </label>
+      <label>Email
+        <input type="email" id="email" disabled>
+      </label>
+      <label>Indirizzo
+        <input type="text" id="address" disabled>
+      </label>
+      <label>Telefono
+        <input type="text" id="phone" disabled>
+      </label>
+    </form>
+  </div>
+
+  <div id="actions">
+    <button id="editBtn">✏️ Modifica</button>
+    <button id="saveBtn" style="display:none;">💾 Salva</button>
+    <button id="cancelBtn" style="display:none;">❌ Annulla</button>
     <a href="my-books.html">📚 I miei libri</a> |
-    <a href="login.html" onclick="logout()">🚪 Logout</a>
-  </p>
+    <a href="login.html" id="logout" onclick="logout()">🚪 Logout</a>
+  </div>
 
   <script src="js/api.js"></script>
+
   <script>
-    function getQueryParam(name) {
-      return new URLSearchParams(window.location.search).get(name);
-    }
+    let userData = null;
+    const form = document.getElementById('user-form');
+    const editBtn = document.getElementById('editBtn');
+    const saveBtn = document.getElementById('saveBtn');
+    const cancelBtn = document.getElementById('cancelBtn');
 
-    async function checkAuth() {
-      const res = await fetch("http://localhost:8000/me", { credentials: "same-origin" });
-      if (!res.ok) {
-        window.location.href = "login.html";
-        return null;
-      }
-      return await res.json();
-    }
-
-    async function renderUser() {
-      const userAuth = await checkAuth();
-      if (!userAuth) return;
-
-      try {
-        const user = await getUser();
-        document.getElementById("user-detail").innerHTML = `
-          <h2>${user.name} ${user.surname}</h2>
-          <div class="info">
-            <p><strong>Username:</strong> ${user.username}</p>
-            <p><strong>Email:</strong> ${user.email}</p>
-            <p><strong>Indirizzo:</strong> ${user.address}, ${user.city}</p>
-            <p><strong>Telefono:</strong> ${user.phone}</p>
-          </div>
-        `;
-      } catch (err) {
-        document.getElementById("user-detail").innerHTML =
-          `<p style="color:red;">${err.message}</p>`;
-      }
-    }
-
-    function logout() {
-      fetch("http://localhost:8000/logout").then(() => {
-        window.location.href = "login.html";
+    function toggleEdit(editMode) {
+      Array.from(form.elements).forEach(el => {
+          el.disabled = !editMode;
       });
+      editBtn.style.display = editMode ? 'none' : 'inline-block';
+      saveBtn.style.display = editMode ? 'inline-block' : 'none';
+      cancelBtn.style.display = editMode ? 'inline-block' : 'none';
     }
 
-    renderUser();
+    // Popola il form con i dati
+    function fillForm(data) {
+      for (const key in data) {
+        if (form.elements[key]) {
+          form.elements[key].value = data[key];
+        }
+      }
+    }
+
+    // Recupero dati utente
+    fetch('/me')
+      .then(r => {
+        if (r.status === 401) {
+          window.location.href = '/login.html';
+          return;
+        }
+        return r.json();
+      })
+      .then(data => {
+        userData = data;
+        fillForm(userData);
+      });
+
+    // Edit
+    editBtn.addEventListener('click', () => toggleEdit(true));
+
+    // Cancel
+    cancelBtn.addEventListener('click', () => {
+      fillForm(userData);
+      toggleEdit(false);
+    });
+
+    // Save
+    saveBtn.addEventListener('click', () => {
+      const updated = {
+        username: form.username.value,
+        name: form.name.value,
+        surname: form.surname.value,
+        email: form.email.value,
+        address: form.address.value,
+        phone: form.phone.value
+      };
+
+      fetch('/me', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(updated)
+      })
+      .then(res => {
+        if (res.error) {
+          alert(res.error);
+        } else {
+          userData = res.user;
+          fillForm(userData);
+          toggleEdit(false);
+          alert('Profilo aggiornato!');
+        }
+      });
+    });
+
+    // Logout
+    document.getElementById('logout').addEventListener('click', e => {
+      e.preventDefault();
+      fetch('/logout')
+        .then(() => window.location.href = '/login.html');
+    });
   </script>
 </body>
 </html>

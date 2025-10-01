@@ -44,23 +44,8 @@
   <script type="module">
     import { initBookFilter } from './js/book-filter.js';
 
-    async function checkAuth() {
-      const res = await fetch("http://localhost:8000/me", { credentials: "same-origin" });
-      if (!res.ok) {
-        window.location.href = "login.html";
-        return null;
-      }
-      return await res.json();
-    }
-
     async function addBook(bookId) {
-      const res = await fetch('http://localhost:8000/userbooks', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ bookID: bookId }),
-        credentials: 'same-origin'
-      });
-      const data = await res.json();
+      const data = await addUserBook(bookId);
       if (data.message){
         alert(data.message);
       } else if (data.error){
@@ -70,13 +55,7 @@
     }
 
     async function removeBook(bookId) {
-      const res = await fetch('http://localhost:8000/userbooks', {
-        method: 'DELETE',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ bookID: bookId }),
-        credentials: 'same-origin'
-      });
-      const data = await res.json();
+      const data = await removeUserBook(bookId);
       if (data.message){
         alert(data.message);
       } else if(data.error){
@@ -133,12 +112,6 @@
       container.innerHTML = await resp.text();
 
       initBookFilter(allBooks, renderBookListUX);
-    }
-
-    function logout() {
-      fetch("http://localhost:8000/logout").then(() => {
-        window.location.href = "login.html";
-      });
     }
 
     renderUserBooks();
