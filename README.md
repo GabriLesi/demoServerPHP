@@ -11,6 +11,7 @@ Questo progetto è una piccola applicazione full-stack per una libreria che dimo
 ------------------------------------------------------------------------
 
 🗂 Struttura del progetto
+
     ├── backend/
     │   ├── data/               # Dati in formato JSON
     │   │   ├── Users.json
