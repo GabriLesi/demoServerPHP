@@ -7,6 +7,9 @@ use Controllers\UserController;
 use Controllers\BookController;
 use Controllers\UserBookController;
 
+use Utils\Router;
+use Utils\ApiHelper;
+
 // URI richiesto
 $sUri = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
 $sUri = trim($sUri, '/');
@@ -18,7 +21,7 @@ $aPublicEndpoints = [
     'js/api.js'
 ];
 
-//  pagine frontend che richiedono login
+//  Pagine frontend che richiedono login
 $aProtectedPages = [
     'user.html',
     'books.html',
@@ -29,7 +32,9 @@ $aProtectedPages = [
 // Percorso assoluto al file richiesto
 $sFilepath = __DIR__ . '/frontend/' . $sUri;
 
-//Le pagine statiche vengono servite direttamente
+$sUserBookpath = __DIR__ . '/backend/data/UserBooks.json';
+
+// Middleware di protezione richieste (terra terra)
 if ($sUri && file_exists($sFilepath) && !is_dir($sFilepath)) {
     // Se non è tra i pubblici e l’utente non è loggato, redirect al login
     // Se è una pagina protetta e l’utente non è loggato, redirect al login
@@ -53,174 +58,158 @@ if ($sUri && file_exists($sFilepath) && !is_dir($sFilepath)) {
     exit;
 }
 
+// Routing e mappe
 
-//SWITCH per le API REST
+$hRouter = new Router();
+
+$hBookController = new BookController();
+$hUserController = new UserController();
+$hUserBookController = new UserBookController();
 
 header('Access-Control-Allow-Origin: *');
 header('Content-Type: application/json');
 
-$aParts = explode('/', $sUri);
+// Login 
+$hRouter->add('POST', '/login', function () {
+    $aData = json_decode(file_get_contents('php://input'), true);
+    $aUsername = $aData['username'] ?? '';
+    $aPassword = $aData['password'] ?? '';
 
-switch ($aParts[0]) {
-    case 'login':
-        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-            $aData = json_decode(file_get_contents('php://input'), true);
-            $aUsername = $aData['username'] ?? '';
-            $aPassword = $aData['password'] ?? '';
+    $aUsers = json_decode(file_get_contents(__DIR__ . '/backend/data/users.json'), true);
 
-            $aUsers = json_decode(file_get_contents(__DIR__ . '/backend/data/users.json'), true);
-
-            $aUser = null;
-            foreach ($aUsers as $aUser) {
-                if ($aUser['username'] === $aUsername && $aUser['password'] === $aPassword) {
-                    $aUser = $aUser;
-                    break;
-                }
-            }
-
-            if ($aUser) {
-                unset($aUser['password']);
-                $_SESSION['user'] = $aUser; //  login avvenuto
-                echo json_encode($aUser);
-            } else {
-                http_response_code(401);
-                echo json_encode(['error' => 'Credenziali non valide']);
-            }
+    $aUserLogged = null;
+    foreach ($aUsers as $aUser) {
+        if ($aUser['username'] === $aUsername && $aUser['password'] === $aPassword) {
+            $aUserLogged = $aUser;
+            break;
         }
-        break;
+    }
 
-    case 'logout':
-        session_destroy();
-        echo json_encode(['message' => 'Logout effettuato']);
-        break;
+    if ($aUserLogged) {
+        unset($aUserLogged['password']);
+        $_SESSION['user'] = $aUserLogged; //  login avvenuto
+        echo json_encode($aUserLogged);
+    } else {
+        http_response_code(401);
+        echo json_encode(['error' => 'Credenziali non valide']);
+    }
+});
 
-    case 'me':
-        if (!isset($_SESSION['user'])) {
-            http_response_code(401);
-            echo json_encode(['error' => 'Non autorizzato']);
-        } else {
-            echo json_encode($_SESSION['user']);
+// Logout
+$hRouter->add('GET', '/logout', function () {
+    session_destroy();
+    $hApiHelper = new ApiHelper();
+    $hApiHelper->jsonResponse(['message' => 'Logout effettuato']);
+});
+
+// Utente loggato
+$hRouter->add('GET', '/me', function () {
+    $hApiHelper = new ApiHelper();
+    $hApiHelper->requireAuth();
+    $hApiHelper->jsonResponse($_SESSION['user']);
+});
+
+// Elenco libri
+$hRouter->add('GET', '/books', function () {
+    $hApiHelper = new ApiHelper();
+    $hBookController = new BookController();
+
+    $hApiHelper->requireAuth();
+    $hApiHelper->jsonResponse($hBookController->index());
+});
+
+// Dettaglio libro con parametro dinamico
+$hRouter->add('GET', '/books/{bookID}', function ($aParams){
+    $hApiHelper = new ApiHelper();
+    $hBookController = new BookController();
+
+    $hApiHelper->requireAuth();
+    $aBook = $hBookController->detail((int)$aParams['bookID']);
+    $aBook ? $hApiHelper->jsonResponse($aBook) : $hApiHelper->jsonResponse(['error' => 'Libro non trovato'], 404);
+});
+
+// Libri utente loggato
+$hRouter->add('GET', '/userbooks', function (){
+    $hApiHelper = new ApiHelper();
+    $hUserBookController = new UserBookController();
+
+    $aUser = $hApiHelper->requireAuth();
+    $hApiHelper->jsonResponse($hUserBookController->listUserBooks($_SESSION["user"]["id"]));
+});
+
+// Aggiungi libro all’utente
+$hRouter->add('POST', '/userbooks', function (){
+    $hApiHelper = new ApiHelper();
+    $hUserBookController = new UserBookController();
+
+    $aUser = $hApiHelper->requireAuth();
+    $aInputData = $hApiHelper->getJsonInput();
+
+    $aUserBooks = $hUserBookController->listUserBooks();
+    $sUserId = $aUser['id'];
+    $sBookId = $aInputData['bookId'];
+    if(!$sBookId){
+        $hApiHelper->jsonResponse(['error' => 'Libro non trovato'], 400);
+    }
+
+    // Controlla se esiste già
+    $bExists = false;
+    foreach ($aUserBooks as $aUserBook) {
+        if ($aUserBook['userID'] == $sUserId && $aUserBook['bookID'] == $sBookId) {
+            $bExists = true;
+            break;
         }
-        break;
+    }
 
+    if (!$bExists) {
+        $aUserBooks[] = ['userID' => $sUserId, 'bookID' => $sBookId];
+        $bResult = file_put_contents($sUserBookpath, json_encode($aUserBooks, JSON_PRETTY_PRINT));
+    }
 
-    case 'users':
-        if (!isset($_SESSION['user'])) {
-            http_response_code(401);
-            echo json_encode(['error' => 'Non autorizzato']);
-            exit;
-        }
+    $bResult ? $hApiHelper->jsonResponse(['message' => 'Libro associato'])
+            : $hApiHelper->jsonResponse(['error' => 'Libro già associato o non trovato'], 400);
+});
 
-        if (isset($aParts[1]) && $aParts[1] === 'me' && $_SERVER['REQUEST_METHOD'] === 'PUT') {
-            $data = json_decode(file_get_contents('php://input'), true);
-            $userId = $_SESSION['user']['id'];
+// Rimuovi libro dall’utente
+$hRouter->add('DELETE', '/userbooks', function (){
+    $hApiHelper = new ApiHelper();
+    $hUserBookController = new UserBookController();
 
-            $usersFile = __DIR__ . '/backend/data/users.json';
-            $users = json_decode(file_get_contents($usersFile), true);
+    $aUser = $hApiHelper->requireAuth();
+    $aInputData = $hApiHelper->getJsonInput();
 
-            foreach ($users as &$u) {
-                if ($u['id'] == $userId) {
-                    // Aggiorna solo i campi sensati (no id, no username obbligatorio)
-                    foreach (['first_name', 'last_name', 'email', 'address', 'city', 'phone', 'password'] as $field) {
-                        if (isset($data[$field])) $u[$field] = $data[$field];
-                    }
-                    $_SESSION['user'] = $u; // aggiorna sessione
-                    file_put_contents($usersFile, json_encode($users, JSON_PRETTY_PRINT));
-                    echo json_encode(['message' => 'Profilo aggiornato', 'user' => $u]);
-                    exit;
-                }
-            }
-            http_response_code(404);
-            echo json_encode(['error' => 'Utente non trovato']);
-        }
-        break;
-    case 'books':
-        // Protezione API
-        if (!isset($_SESSION['user'])) {
-            http_response_code(401);
-            echo json_encode(['error' => 'Non autorizzato']);
-            exit;
-        }
+    $aUserBooks = $hUserBookController->listUserBooks();
+    $sUserId = $aUser['id'];
+    $sBookId = $aInputData['bookId'];
+    if(!$sBookId){
+        $hApiHelper->jsonResponse(['error' => 'Libro non trovato'], 400);
+    }
 
-        $hController = new BookController();
-        if (isset($aParts[1])) {
-            $hController->detail($aParts[1]);
-        } else {
-            $hController->index();
-        }
-        
-        break;
+    $aUserBooks = array_filter($aUserBooks, function($aUserBook) use ($sUserId, $sBookId) {
+        if (array_key_exists('userID', $aUserBook) && array_key_exists('bookID', $aUserBook))
+        return !($aUserBook['userID'] == $sUserId && $aUserBook['bookID'] == $sBookId);
+    });
 
-    case 'userbooks':
-        if (!isset($_SESSION['user'])) {
-            http_response_code(401);
-            echo json_encode(['error' => 'Non autorizzato']);
-            exit;
-        }
+    $bResult = file_put_contents($sUserBookpath, json_encode(array_values($aUserBooks), JSON_PRETTY_PRINT));
 
-        $sUserId = $_SESSION['user']['id'];
-        $sFilePath = __DIR__ . '/backend/data/UserBooks.json';
-        $aUserBooks = json_decode(file_get_contents($sFilePath), true);
+    $bResult ? $hApiHelper->jsonResponse(['message' => 'Associazione rimossa'])
+            : $hApiHelper->jsonResponse(['error' => 'Associazione non trovata'], 404);
+});
 
-        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-            // Aggiungi associazione
-            $aData = json_decode(file_get_contents('php://input'), true);
-            $sBookId = $aData['bookID'] ?? null;
-            if (!$sBookId) {
-                http_response_code(400);
-                echo json_encode(['error' => 'bookID mancante']);
-                exit;
-            }
+// Aggiornamento utente
+$hRouter->add('PUT', '/me', function ()  {
+    $hApiHelper = new ApiHelper();
+    $hUserController = new UserController();
 
-            // Controlla se esiste già
-            $bExists = false;
-            foreach ($aUserBooks as $aUserBook) {
-                if ($aUserBook['userID'] == $sUserId && $aUserBook['bookID'] == $sBookId) {
-                    $bExists = true;
-                    break;
-                }
-            }
+    $aUser = $hApiHelper->requireAuth();
+    $aInputData = $hApiHelper->getJsonInput();
+    $updatedUser = $hUserController->updateUser($aInputData);
+    if ($updatedUser) {
+        $_SESSION['user'] = $updatedUser; // aggiorna sessione
+        $hApiHelper->jsonResponse(['message' => 'Utente aggiornato', 'user' => $updatedUser]);
+    }
+    $hApiHelper->jsonResponse(['error' => 'Aggiornamento fallito'], 400);
+});
 
-            if (!$bExists) {
-                $aUserBooks[] = ['userID' => $sUserId, 'bookID' => $sBookId];
-                file_put_contents($sFilePath, json_encode($aUserBooks, JSON_PRETTY_PRINT));
-            }
-
-            echo json_encode(['message' => 'Associazione aggiunta']);
-        } elseif ($_SERVER['REQUEST_METHOD'] === 'DELETE') {
-            // Rimuovi associazione
-            $aData = json_decode(file_get_contents('php://input'), true);
-            $sBookId = $aData['bookID'] ?? null;
-            if (!$sBookId) {
-                http_response_code(400);
-                echo json_encode(['error' => 'bookID mancante']);
-                exit;
-            }
-
-            $aUserBooks = array_filter($aUserBooks, function($aUserBook) use ($sUserId, $sBookId) {
-                if (array_key_exists('userID', $aUserBook) && array_key_exists('bookID', $aUserBook))
-                return !($aUserBook['userID'] == $sUserId && $aUserBook['bookID'] == $sBookId);
-            });
-
-            file_put_contents($sFilePath, json_encode(array_values($aUserBooks), JSON_PRETTY_PRINT));
-            echo json_encode(['message' => 'Associazione rimossa']);
-        } else {
-            $hController = new UserBookController();
-            $hController->listUserBooks($_SESSION["user"]["id"]);
-        }
-        break;
-
-
-    case '':
-        // redirect alla login se non loggato
-        if (!isset($_SESSION['user'])) {
-            header("Location: login.html");
-        } else {
-            header("Location: my-books.html");
-        }
-        break;
-
-    default:
-        http_response_code(404);
-        echo json_encode(['error' => 'Endpoint not found']);
-}
+// Infine, dispatch della richiesta
+$hRouter->dispatch($_SERVER['REQUEST_METHOD'], $_SERVER['REQUEST_URI']);

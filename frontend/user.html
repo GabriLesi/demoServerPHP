@@ -16,9 +16,8 @@
   <h1>👤 Dettaglio Utente</h1>
   <div id="user-detail" class="card"></div>
   <p>
-    <a id="user-books-link" href="#">📚 Vedi libri di questo utente</a> |
     <a href="books.html">📖 Libri</a> |
-    <a href="my-books.html">📖 I miei libri</a> |
+    <a href="my-books.html">📚 I miei libri</a> |
     <a href="login.html" onclick="logout()">🚪 Logout</a>
   </p>
 
@@ -52,8 +51,6 @@
             <p><strong>Telefono:</strong> ${user.phone}</p>
           </div>
         `;
-        document.getElementById("user-books-link")
-          .setAttribute("href", `user-books.html?id=${user.id}`);
       } catch (err) {
         document.getElementById("user-detail").innerHTML =
           `<p style="color:red;">${err.message}</p>`;

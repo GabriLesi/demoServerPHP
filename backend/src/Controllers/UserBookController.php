@@ -18,17 +18,17 @@ class UserBookController {
 
     public function index() {
         header('Content-Type: application/json');
-        echo json_encode($this->hUserBookModel->getAll());
+        return $this->hUserBookModel->getAll();
     }
 
     public function detail($nUserBookID) {
         header('Content-Type: application/json');
         $aUserBook = $this->hUserBookModel->getById((int)$nUserBookID);
         if (!empty($aUserBook)) {
-            echo json_encode($aUserBook);
+            return $aUserBook;
         } else {
             http_response_code(404);
-            echo json_encode(['error' => 'Pairing user book not found']);
+            return ['error' => 'Pairing user book not found'];
         }
     }
 
@@ -40,10 +40,10 @@ class UserBookController {
                 $aBookDetails = $this->hBookModel->getById((int)$aUserBooks[$i]["bookID"]);
                 $aUserBooks[$i]["book"] = $aBookDetails;
             }
-            echo json_encode($aUserBooks);
+            return $aUserBooks;
         } else {
             http_response_code(404);
-            echo json_encode(['error' => 'Pairing user book not found']);
+            return ['error' => 'Pairing user book not found'];
         }
     }
 }

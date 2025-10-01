@@ -12,17 +12,17 @@ class BookController {
 
     public function index() {
         header('Content-Type: application/json');
-        echo json_encode($this->hBookModel->getAll());
+        return $this->hBookModel->getAll();
     }
 
     public function detail($nBookID) {
         header('Content-Type: application/json');
         $aBook = $this->hBookModel->getById((int)$nBookID);
         if (!empty($aBook)) {
-            echo json_encode($aBook);
+            return $aBook;
         } else {
             http_response_code(404);
-            echo json_encode(['error' => 'Book not found']);
+            return ['error' => 'Book not found'];
         }
     }
 }

@@ -16,7 +16,7 @@ async function getBook(bookID) {
 
 // Ottieni dettagli del proprio utente
 async function getUser() {
-  const res = await fetch(`${API_BASE}/user`);
+  const res = await fetch(`${API_BASE}/me`);
   if (!res.ok) throw new Error("Utente non trovato");
   return await res.json();
 }
