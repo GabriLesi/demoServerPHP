@@ -78,10 +78,17 @@
         const ownedIds = userBooks.map(ub => ub.bookID);
         const ownedBooksList = document.getElementById("owned-books");
         ownedBooksList.innerHTML = "";
+
         allBooks.forEach(book => {
           if (ownedIds.includes(book.id)) {
             const li = document.createElement("li");
-            li.innerHTML = `<strong>${book.title}</strong> <button onclick="removeBook(${book.id})">Rimuovi</button>`;
+            li.innerHTML = `<strong>${book.title}</strong>`;
+            
+            const btn = document.createElement("button");
+            btn.textContent = "Rimuovi";
+            btn.addEventListener("click", () => removeBook(book.id));
+            
+            li.appendChild(btn);
             ownedBooksList.appendChild(li);
           }
         });
@@ -92,10 +99,17 @@
         const ownedIds = userBooks.map(ub => ub.bookID);
         const availableBooksList = document.getElementById("available-books");
         availableBooksList.innerHTML = "";
+
         allBooks.forEach(book => {
           if (!ownedIds.includes(book.id)) {
             const li = document.createElement("li");
-            li.innerHTML = `<strong>${book.title}</strong> <button onclick="addBook(${book.id})">Aggiungi</button>`;
+            li.innerHTML = `<strong>${book.title}</strong>`;
+            
+            const btn = document.createElement("button");
+            btn.textContent = "Aggiungi";
+            btn.addEventListener("click", () => addBook(book.id));
+            
+            li.appendChild(btn);
             availableBooksList.appendChild(li);
           }
         });

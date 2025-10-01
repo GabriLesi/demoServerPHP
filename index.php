@@ -145,26 +145,7 @@ $hRouter->add('POST', '/userbooks', function (){
     $aUser = $hApiHelper->requireAuth();
     $aInputData = $hApiHelper->getJsonInput();
 
-    $aUserBooks = $hUserBookController->listUserBooks();
-    $sUserId = $aUser['id'];
-    $sBookId = $aInputData['bookId'];
-    if(!$sBookId){
-        $hApiHelper->jsonResponse(['error' => 'Libro non trovato'], 400);
-    }
-
-    // Controlla se esiste già
-    $bExists = false;
-    foreach ($aUserBooks as $aUserBook) {
-        if ($aUserBook['userID'] == $sUserId && $aUserBook['bookID'] == $sBookId) {
-            $bExists = true;
-            break;
-        }
-    }
-
-    if (!$bExists) {
-        $aUserBooks[] = ['userID' => $sUserId, 'bookID' => $sBookId];
-        $bResult = file_put_contents($sUserBookpath, json_encode($aUserBooks, JSON_PRETTY_PRINT));
-    }
+    $bResult = $hUserBookController->addUserBook($aInputData);
 
     $bResult ? $hApiHelper->jsonResponse(['message' => 'Libro associato'])
             : $hApiHelper->jsonResponse(['error' => 'Libro già associato o non trovato'], 400);
@@ -178,19 +159,7 @@ $hRouter->add('DELETE', '/userbooks', function (){
     $aUser = $hApiHelper->requireAuth();
     $aInputData = $hApiHelper->getJsonInput();
 
-    $aUserBooks = $hUserBookController->listUserBooks();
-    $sUserId = $aUser['id'];
-    $sBookId = $aInputData['bookId'];
-    if(!$sBookId){
-        $hApiHelper->jsonResponse(['error' => 'Libro non trovato'], 400);
-    }
-
-    $aUserBooks = array_filter($aUserBooks, function($aUserBook) use ($sUserId, $sBookId) {
-        if (array_key_exists('userID', $aUserBook) && array_key_exists('bookID', $aUserBook))
-        return !($aUserBook['userID'] == $sUserId && $aUserBook['bookID'] == $sBookId);
-    });
-
-    $bResult = file_put_contents($sUserBookpath, json_encode(array_values($aUserBooks), JSON_PRETTY_PRINT));
+    $bResult = $hUserBookController->deleteUserBook($aInputData);
 
     $bResult ? $hApiHelper->jsonResponse(['message' => 'Associazione rimossa'])
             : $hApiHelper->jsonResponse(['error' => 'Associazione non trovata'], 404);

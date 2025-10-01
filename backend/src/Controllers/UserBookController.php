@@ -46,4 +46,14 @@ class UserBookController {
             return ['error' => 'Pairing user book not found'];
         }
     }
+
+    public function addUserBook($aInputData){
+        $bResult = $this->hUserBookModel->addUserBook((int)$_SESSION["user"]["id"], (int)$aInputData["bookID"]);
+        return $bResult;
+    }
+
+    public function deleteUserBook($aInputData){
+        $bResult = $this->hUserBookModel->deleteUserBook((int)$_SESSION["user"]["id"], (int)$aInputData["bookID"]);
+        return $bResult;
+    }
 }

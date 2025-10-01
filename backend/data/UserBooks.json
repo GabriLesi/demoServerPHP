@@ -30,5 +30,13 @@
     {
         "userID": 3,
         "bookID": 3
+    },
+    {
+        "userID": 3,
+        "bookID": 6
+    },
+    {
+        "userID": 3,
+        "bookID": 5
     }
 ]
