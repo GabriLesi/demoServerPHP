@@ -1,4 +1,4 @@
-📚 Book Manager – Progetto Demo
+Book Manager – Progetto Demo
 
 Questo progetto è una piccola applicazione full-stack per una libreria che dimostra: 
 - Backend in PHP con API REST 
@@ -10,7 +10,7 @@ Questo progetto è una piccola applicazione full-stack per una libreria che dimo
 
 ------------------------------------------------------------------------
 
-🗂 Struttura del progetto
+Struttura del progetto
 
     ├── backend/
     │   ├── data/               # Dati in formato JSON
@@ -40,14 +40,14 @@ Questo progetto è una piccola applicazione full-stack per una libreria che dimo
 
 ------------------------------------------------------------------------
 
-⚙️ Requisiti
+Requisiti
 
 -   PHP >= 8.0 (testato sulla 8.4.13)
 -   Composer (per autoload PSR-4)
 
 ------------------------------------------------------------------------
 
-▶️ Avvio del server
+Avvio del server
 
 0. Clonare il progetto da Github e aprire un terminale nella root del progetto
 
@@ -63,7 +63,7 @@ Questo progetto è una piccola applicazione full-stack per una libreria che dimo
 
 ------------------------------------------------------------------------
 
-🔐 Autenticazione
+Autenticazione
 
 - Tutte le richieste (tranne login/logout) e le pagine statiche (tranne login.html) richiedono autenticazione tramite sessione PHP.
 - Se un utente non è loggato:
@@ -72,7 +72,7 @@ Questo progetto è una piccola applicazione full-stack per una libreria che dimo
 
 ------------------------------------------------------------------------
 
-📡 API disponibili
+API disponibili
 
 Autenticazione
 
@@ -97,7 +97,7 @@ Libri utente
 
 ------------------------------------------------------------------------
 
-🧪 Utenti di test
+Utenti di test
 
 Il file users.json contiene utenti demo per testare diversi profili.
 Ad esempio si può accedere con:
@@ -106,7 +106,7 @@ Ad esempio si può accedere con:
 
 ------------------------------------------------------------------------
 
-📖 Funzionalità frontend
+Funzionalità frontend
 
 -   login.html → login utente
 -   my-books.html → elenco libri associati con pulsanti per aggiungerne/rimuoverne
@@ -116,7 +116,7 @@ Ad esempio si può accedere con:
 
 ------------------------------------------------------------------------
 
-🚀 Estensioni possibili
+Estensioni possibili
 
 -   Registrazione utenti
 -   Libri preferiti degli utenti
