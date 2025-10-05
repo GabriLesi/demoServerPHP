@@ -38,5 +38,9 @@
     {
         "userID": 3,
         "bookID": 5
+    },
+    {
+        "userID": 3,
+        "bookID": 4
     }
 ]

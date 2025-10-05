@@ -4,6 +4,7 @@
     "title": "Il nome della rosa",
     "author": "Umberto Eco",
     "year": 1980,
+    "available": 0,
     "description": "Romanzo storico ambientato in un monastero medievale.",
     "genre": "Storico"
   },
@@ -12,6 +13,7 @@
     "title": "1984",
     "author": "George Orwell",
     "year": 1949,
+    "available": 0,
     "description": "Distopia su totalitarismo e sorveglianza.",
     "genre": "Distopico"
   },
@@ -20,6 +22,7 @@
     "title": "Il Gattopardo",
     "author": "Giuseppe Tomasi di Lampedusa",
     "year": 1958,
+    "available": 2,
     "description": "Romanzo storico sulla decadenza dell'aristocrazia siciliana.",
     "genre": "Storico"
   },
@@ -28,6 +31,7 @@
     "title": "Il piccolo principe",
     "author": "Antoine de Saint-Exupéry",
     "year": 1943,
+    "available": 2,
     "description": "Favola filosofica sul senso della vita e dell'amicizia.",
     "genre": "Favola"
   },
@@ -36,6 +40,7 @@
     "title": "Orgoglio e pregiudizio",
     "author": "Jane Austen",
     "year": 1813,
+    "available": 2,
     "description": "Romanzo sulla società inglese e le relazioni amorose.",
     "genre": "Romantico"
   },
@@ -44,6 +49,7 @@
     "title": "Cent'anni di solitudine",
     "author": "Gabriel García Márquez",
     "year": 1967,
+    "available": 2,
     "description": "Saga familiare con elementi di realismo magico.",
     "genre": "Realismo magico"
   },
@@ -52,6 +58,7 @@
     "title": "Il Signore degli Anelli",
     "author": "J.R.R. Tolkien",
     "year": 1954,
+    "available": 2,
     "description": "Epica saga fantasy nella Terra di Mezzo.",
     "genre": "Fantasy"
   },
@@ -60,6 +67,7 @@
     "title": "La coscienza di Zeno",
     "author": "Italo Svevo",
     "year": 1923,
+    "available": 2,
     "description": "Romanzo psicologico sulla vita e i pensieri di Zeno Cosini.",
     "genre": "Psicologico"
   },
@@ -68,6 +76,7 @@
     "title": "Fahrenheit 451",
     "author": "Ray Bradbury",
     "year": 1953,
+    "available": 2,
     "description": "Distopia sul controllo della conoscenza attraverso la censura.",
     "genre": "Distopico"
   },
@@ -76,6 +85,7 @@
     "title": "La Divina Commedia",
     "author": "Dante Alighieri",
     "year": 1320,
+    "available": 2,
     "description": "Poema epico sulla vita dopo la morte e il viaggio dell'anima.",
     "genre": "Poema epico"
   },
@@ -84,6 +94,7 @@
     "title": "Moby Dick",
     "author": "Herman Melville",
     "year": 1851,
+    "available": 2,
     "description": "Avventura marinaresca e ossessione per la balena bianca.",
     "genre": "Avventura"
   },
@@ -92,6 +103,7 @@
     "title": "Anna Karenina",
     "author": "Lev Tolstoj",
     "year": 1877,
+    "available": 2,
     "description": "Tragedia romantica ambientata nella società russa dell'Ottocento.",
     "genre": "Romantico"
   },
@@ -100,6 +112,7 @@
     "title": "Il giovane Holden",
     "author": "J.D. Salinger",
     "year": 1951,
+    "available": 2,
     "description": "Romanzo sulla ribellione e l'alienazione adolescenziale.",
     "genre": "Formazione"
   },
@@ -108,6 +121,7 @@
     "title": "Dracula",
     "author": "Bram Stoker",
     "year": 1897,
+    "available": 0,
     "description": "Romanzo gotico sul vampiro conte Dracula.",
     "genre": "Gotico"
   },
@@ -116,6 +130,7 @@
     "title": "Frankenstein",
     "author": "Mary Shelley",
     "year": 1818,
+    "available": 2,
     "description": "Storia del dottor Frankenstein e della sua creatura.",
     "genre": "Gotico"
   },
@@ -124,6 +139,7 @@
     "title": "Il processo",
     "author": "Franz Kafka",
     "year": 1925,
+    "available": 3,
     "description": "Romanzo sull'assurdità e l'alienazione burocratica.",
     "genre": "Esistenzialista"
   },
@@ -132,6 +148,7 @@
     "title": "Lolita",
     "author": "Vladimir Nabokov",
     "year": 1955,
+    "available": 1,
     "description": "Romanzo controverso sull'ossessione e l'amore proibito.",
     "genre": "Psicologico"
   },
@@ -140,6 +157,7 @@
     "title": "La metamorfosi",
     "author": "Franz Kafka",
     "year": 1915,
+    "available": 1,
     "description": "Racconto sulla trasformazione di Gregor Samsa in insetto.",
     "genre": "Esistenzialista"
   },
@@ -148,6 +166,7 @@
     "title": "I promessi sposi",
     "author": "Alessandro Manzoni",
     "year": 1827,
+    "available": 1,
     "description": "Romanzo storico sulla Lombardia del Seicento.",
     "genre": "Storico"
   },
@@ -156,6 +175,7 @@
     "title": "Cuore",
     "author": "Edmondo De Amicis",
     "year": 1886,
+    "available": 1,
     "description": "Romanzo pedagogico sui valori morali e l'educazione dei giovani.",
     "genre": "Pedagogico"
   }

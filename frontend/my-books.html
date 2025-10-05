@@ -20,25 +20,45 @@
 </head>
 <body>
   <h1>📚 I miei libri</h1>
-  <div id="user-info"></div>
+  <div id="loader-container"></div>
+  <div id="page-content" style="display: none;">
+    <div id="user-info"></div>
 
-  <div id="book-filter-container"></div>
-  
-  <div class="section">
-    <h2>Libri già associati</h2>
-    <ul id="owned-books"></ul>
+    <div id="book-filter-container"></div>
+    
+    <div class="section">
+      <h2>Libri prenotati</h2>
+      <ul id="owned-books"></ul>
+    </div>
+
+    <div class="section">
+      <h2>Libri disponibili</h2>
+      <ul id="available-books"></ul>
+    </div>
+
+    <p>
+      <a href="user.html">👤 Dettaglio Utente</a> | 
+      <a href="books.html">📖 Tutti i libri</a> | 
+      <a href="login.html" onclick="logout()">🚪 Logout</a>
+    </p>
   </div>
 
-  <div class="section">
-    <h2>Libri disponibili da associare</h2>
-    <ul id="available-books"></ul>
-  </div>
-
-  <p>
-    <a href="user.html">👤 Dettaglio Utente</a> | 
-    <a href="books.html">📖 Tutti i libri</a> | 
-    <a href="login.html" onclick="logout()">🚪 Logout</a>
-  </p>
+  <script src="js/loader.js"></script>
+  <script>
+    // Inizializza il loader e poi esegui le chiamate AJAX
+    initLoader().then(() => {
+      // Esempio: caricamento dei dati
+      Promise.all([
+        fetch('/backend/books').then(r => r.json()),
+        fetch('/backend/my-books').then(r => r.json())
+      ])
+      .then(([books, myBooks]) => {
+        // Popola la pagina con i dati ricevuti
+        console.log('Dati caricati', books, myBooks);
+      })
+      .catch(err => console.error(err));
+    });
+  </script>
 
   <script src="js/api.js"></script>
   <script type="module">
@@ -101,15 +121,16 @@
         availableBooksList.innerHTML = "";
 
         allBooks.forEach(book => {
-          if (!ownedIds.includes(book.id)) {
+          if (!ownedIds.includes(book.id) && (book.available > 0)) {
             const li = document.createElement("li");
+
             li.innerHTML = `<strong>${book.title}</strong>`;
-            
+
             const btn = document.createElement("button");
             btn.textContent = "Aggiungi";
             btn.addEventListener("click", () => addBook(book.id));
-            
-            li.appendChild(btn);
+
+            li.appendChild(btn);            
             availableBooksList.appendChild(li);
           }
         });
@@ -130,5 +151,6 @@
 
     renderUserBooks();
   </script>
+
 </body>
 </html>
