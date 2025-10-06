@@ -101,7 +101,7 @@ Utenti di test
 
 Il file users.json contiene utenti demo per testare diversi profili.
 Ad esempio si può accedere con:
-- username: mariorossi@gmail.com
+- username: marioross
 - password: mario
 
 ------------------------------------------------------------------------
